@@ -1,63 +1,92 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage"; // Stelle sicher, dass die korrekten Funktionen importiert werden
-import { storage } from "./firebase";
-import { v4 } from "uuid";
+
+// // App.js
+// import React, { useRef, useState } from "react";
+// import "./App.css";
+// import LineChartComp from "./components/LineChart";
+// import DownloaderComp from "./components/Downloader";
+// import UploaderComp from "./components/Uploader"; // Neu hinzugefügt
+
+// function App() {
+//   const chartRef = useRef(null);
+//   const [imageBase64, setImageBase64] = useState(null);
+//   const [imageUrls, setImageUrls] = useState([]);
+
+//   const handleImageDownload = (base64) => {
+//     setImageBase64(base64);
+//     console.log(222);
+//   };
+
+//   return (
+//     <div className="App">
+//       {/* Verwende die neue UploaderComp-Komponente */}
+//       <UploaderComp chartRef={chartRef} setImageUrls={setImageUrls} />
+
+//       <LineChartComp ref={chartRef} />
+
+//         {imageUrls.map((url) => (
+//           <div key={url} className="image-wrapper" style={{ width: "500px", height: "auto" }}>
+//             <img
+//               src={url}
+//               alt="uploaded"
+//               style={{ width: "500px", height: "auto" }}/>
+//           </div>
+//         ))}
+
+//       <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
+
+
+
+
+
+
+// App.js
+import React, { useRef, useState } from "react";
 import "./App.css";
 import LineChartComp from "./components/LineChart";
 import DownloaderComp from "./components/Downloader";
+import UploaderComp from "./components/Uploader"; // Neu hinzugefügt
 
 function App() {
   const chartRef = useRef(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const [imageUrls, setImageUrls] = useState([]);
 
   const handleImageDownload = (base64) => {
     setImageBase64(base64);
+    // Optional: Hier kannst du eine Popup-Bestätigung für das Hochladen anzeigen
   };
-
-  const [imageUpload, setImageUpload] = useState(null);
-  const [imageUrls, setImageUrls] = useState([]);
-
-  const imagesListRef = ref(storage, "images/");
-  const uploadFile = () => {
-    if (imageUpload == null) return;
-    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
-    uploadBytes(imageRef, imageUpload).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        setImageUrls((prev) => [...prev, url]);
-      });
-    });
-  };
-
-  useEffect(() => {
-    listAll(imagesListRef).then((response) => {
-      response.items.forEach((item) => {
-        getDownloadURL(item).then((url) => {
-          setImageUrls((prev) => [...prev, url]);
-        });
-      });
-    });
-  }, []);
 
   return (
     <div className="App">
-      <input
-        type="file"
-        onChange={(event) => {
-          setImageUpload(event.target.files[0]);
-        }}
+      {/* Verwende die neue UploaderComp-Komponente */}
+      <UploaderComp
+        chartRef={chartRef}
+        setImageUrls={setImageUrls}
+        imageBase64={imageBase64}
       />
-      <button onClick={uploadFile}> Upload Image</button>
-      {imageUrls.map((url) => {
-        return <img src={url} />;
-      })}
 
       <LineChartComp ref={chartRef} />
+
+      {imageUrls.map((url) => (
+        <div key={url} className="image-wrapper" style={{ width: "500px", height: "auto" }}>
+          <img
+            src={url}
+            alt="uploaded"
+            style={{ width: "500px", height: "auto" }}
+          />
+        </div>
+      ))}
+
       <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
     </div>
-    
   );
 }
-
-
 
 export default App;

@@ -134,18 +134,15 @@ const LineChartComp = React.forwardRef((props, ref) => {
   Chart.register(CategoryScale);
 
   return (
-    <div>
-      <h2>Line Chart with Max Value Line</h2>
-      <Line
-        style={{
-          maxWidth: '500px',
-          maxHeight: '500px',
-          // background: 'linear-gradient(to bottom, #333, #000)',
-          background: 'linear-gradient(to bottom, green, red)',
-        }}
-        ref={ref} data={chartData} options={options}
-      />
-    </div>
+    <Line
+      style={{
+        maxWidth: '500px',
+        maxHeight: '500px',
+        background: 'linear-gradient(to bottom, #333, #000)',
+      //   background: 'linear-gradient(to bottom, green, red)',
+      }}
+      ref={ref} data={chartData} options={options}
+    />
   );
 });
 

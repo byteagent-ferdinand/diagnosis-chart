@@ -1,5 +1,18 @@
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column; /* Ändere zu row, wenn du die Elemente horizontal anordnen möchtest */
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image-wrapper {
+  margin: 10px; /* Füge einen Abstand zwischen den Bildern hinzu, wenn gewünscht */
 }
 
 .App-logo {
