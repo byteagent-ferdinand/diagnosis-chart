@@ -52,15 +52,24 @@ import "./App.css";
 import LineChartComp from "./components/LineChart";
 import DownloaderComp from "./components/Downloader";
 import UploaderComp from "./components/Uploader"; // Neu hinzugefügt
+import ImageRendererComp from "./components/ImageRenderer"; // Neu hinzugefügt
 
 function App() {
   const chartRef = useRef(null);
   const [imageBase64, setImageBase64] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
 
+  // const handleImageDownload = (base64) => {
+  //   setImageBase64(base64);
+  //   // Optional: Hier kannst du eine Popup-Bestätigung für das Hochladen anzeigen
+  // };
+
   const handleImageDownload = (base64) => {
+    // Führe asynchrone Aufgaben durch
     setImageBase64(base64);
-    // Optional: Hier kannst du eine Popup-Bestätigung für das Hochladen anzeigen
+
+
+    // Rufe resolve auf, um anzuzeigen, dass die Aufgabe abgeschlossen ist
   };
 
   return (
@@ -85,6 +94,8 @@ function App() {
       ))}
 
       <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
+      <ImageRendererComp imageBase64={imageBase64} />
+
     </div>
   );
 }

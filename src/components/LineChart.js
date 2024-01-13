@@ -9,6 +9,25 @@ const initialData = [
   { sec: 0, motor: 90, gearbox: 70, exhaust: 80 },
   // Add more data points if necessary
 ];
+const gradientBackgroundPlugin = {
+  id: "gradientBackground",
+  beforeDatasetsDraw(chart, args, options) {
+    const { ctx, chartArea: { top, bottom, left, right, width, height }} = chart;
+
+    // Färbe nur den Plot-Bereich (innerhalb der Achsen)
+    ctx.save();
+    ctx.fillStyle = 'green';
+    ctx.fillRect(left, top, width, height);
+    ctx.restore();
+
+  }
+};
+
+Chart.register(
+  // gradientBackgroundPlugin,
+  CategoryScale
+  )
+
 
 const LineChartComp = React.forwardRef((props, ref) => {
   const [data, setData] = useState(initialData);
@@ -24,6 +43,7 @@ const LineChartComp = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
+    
     const intervalId = setInterval(updateData, 1000);
     return () => clearInterval(intervalId);
   }, [data]);
@@ -56,7 +76,7 @@ const LineChartComp = React.forwardRef((props, ref) => {
     ],
   };
 
-  const options = {
+  var options = {
     scales: {
       x: {
         type: 'linear',
@@ -128,21 +148,76 @@ const LineChartComp = React.forwardRef((props, ref) => {
         top: 20,
         bottom: 20,
       },
-    },
+    }
   };
 
-  Chart.register(CategoryScale);
+  const test = () => {
+    console.log("test");
+    console.log(ref);
+    const blackLegend =  {
+      display: true,
+      position: 'top',
+      labels: {
+        color: 'black', // Schriftfarbe der Legende auf weiß setzen
+      },
+    }
+    const blackScales = {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        ticks: {
+          color: 'red', // Schriftfarbe der X-Achse auf weiß setzen
+        },
+        grid: {
+          color: 'red', // Gitterlinienfarbe auf weiß setzen
+        },
+        title: {
+          display: true,
+          text: 'Time in Seconds',
+          color: 'red', // Achsentitel-Farbe auf weiß setzen
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: 'black', // Schriftfarbe der Y-Achse auf weiß setzen
+        },
+        grid: {
+          color: 'black', // Gitterlinienfarbe auf weiß setzen
+        },
+        title: {
+          display: true,
+          text: 'Temperature in °C',
+          color: 'black', // Achsentitel-Farbe auf weiß setzen
+        },
+      }
+    };
+  
+    ref.current.options.scales = blackScales;
+    ref.current.options.plugins.legend = blackLegend;
+    ref.current.update();
+  
+  }
+
+
+
 
   return (
-    <Line
-      style={{
-        maxWidth: '500px',
-        maxHeight: '500px',
-        background: 'linear-gradient(to bottom, #333, #000)',
-      //   background: 'linear-gradient(to bottom, green, red)',
-      }}
-      ref={ref} data={chartData} options={options}
-    />
+    <div>
+      <button onClick={test}>test todo del</button>
+      <Line
+        style={{
+          maxWidth: '500px',
+          maxHeight: '500px',
+          background: 'linear-gradient(to bottom, #333, #000)',
+        }}
+        ref={ref}
+        data={chartData}
+        options={options}
+        // plugins={[gradientBackgroundPlugin]}  // plugins als Array übergeben
+      />
+    </div>
+
   );
 });
 
@@ -150,3 +225,43 @@ export default LineChartComp;
 
 
 
+// // LineChart.js
+// import { Line } from 'react-chartjs-2';
+// import React, { useRef, useEffect } from 'react';
+// import Chart from 'chart.js/auto';
+// import { CategoryScale } from 'chart.js';
+
+// const LineChartComp = React.forwardRef((props, ref) => {
+
+  
+//   const setFontColorToWhite = () => {
+//     // Beispiel: Setze alle Schriftfarben auf Weiß
+//     // Hier kannst du deine spezifische Logik für die Änderung der Schriftfarben implementieren
+//     const chartInstance = ref.current.chartInstance;
+//     chartInstance.options.scales.x.ticks.color = 'white';
+//     chartInstance.options.scales.y.ticks.color = 'white';
+//     chartInstance.options.scales.x.grid.color = 'white';
+//     chartInstance.options.scales.y.grid.color = 'white';
+//     chartInstance.options.scales.x.title.color = 'white';
+//     chartInstance.options.scales.y.title.color = 'white';
+//     chartInstance.options.plugins.legend.labels.color = 'white';
+//     chartInstance.options.annotation.annotations[0].label.fontColor = 'white';
+//   };
+
+//   useEffect(() => {
+//     setFontColorToWhite();
+//   }, []);
+
+//   return (
+//     <Line
+//       style={{
+//         maxWidth: '500px',
+//         maxHeight: '500px',
+//         background: 'linear-gradient(to bottom, #333, #000)',
+//       }}
+//       ref={ref} data={chartData} options={options}
+//     />
+//   );
+// });
+
+// export default LineChartComp;
