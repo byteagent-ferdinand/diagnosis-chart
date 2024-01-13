@@ -1,53 +1,44 @@
 // LineChart.js
 import { Line } from 'react-chartjs-2';
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import { CategoryScale } from 'chart.js';
-import LineChart from '../components/LineChart'
 
 const initialData = [
   { sec: 0, motor: 90, gearbox: 70, exhaust: 80 },
-  // Add more data points if necessary
 ];
-const gradientBackgroundPlugin = {
-  id: "gradientBackground",
-  beforeDatasetsDraw(chart, args, options) {
-    const { ctx, chartArea: { top, bottom, left, right, width, height }} = chart;
 
-    // Färbe nur den Plot-Bereich (innerhalb der Achsen)
-    ctx.save();
-    ctx.fillStyle = 'green';
-    ctx.fillRect(left, top, width, height);
-    ctx.restore();
-
-  }
-};
-
-Chart.register(
-  // gradientBackgroundPlugin,
-  CategoryScale
-  )
-
+Chart.register(CategoryScale);
 
 const LineChartComp = React.forwardRef((props, ref) => {
   const [data, setData] = useState(initialData);
+  const [isGeneratingData, setIsGeneratingData] = useState(true);
 
   const updateData = () => {
-    // Simulate data update
-    const newData = [...data];
-    newData.push({
-      sec: newData[newData.length - 1].sec + 1,
-      motor: Math.floor(190 - Math.random() * 70),
-    });
-    setData(newData.slice(-50)); // Limit data to the last 50 values
+    if (isGeneratingData) {
+      const newData = [...data];
+      newData.push({
+        sec: newData[newData.length - 1].sec + 1,
+        motor: Math.floor(190 - Math.random() * 70),
+      });
+      setData(newData.slice(-50));
+    }
   };
-
+  
   useEffect(() => {
-    
-    const intervalId = setInterval(updateData, 1000);
-    return () => clearInterval(intervalId);
-  }, [data]);
+    if (ref && ref.current) {
+      ref.current.stopDataGeneration =  async () => {
+        setIsGeneratingData(false);
+        await new Promise(resolve => setTimeout(resolve, 20));
+      };
+    }
 
+    const intervalId = setInterval(() => {
+      updateData();
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [data, isGeneratingData]);
 
   const chartData = {
     labels: data.map((dataPoint) => dataPoint.sec),
@@ -56,8 +47,8 @@ const LineChartComp = React.forwardRef((props, ref) => {
         label: 'Motor Temperature',
         fill: false,
         lineTension: 0.1,
-        backgroundColor: 'rgba(0,0,0,0)', // Hintergrundfarbe auf transparent setzen
-        borderColor: 'orange', // Linienfarbe auf orange setzen
+        backgroundColor: 'rgba(0,0,0,0)',
+        borderColor: 'orange',
         borderCapStyle: 'butt',
         borderDash: [],
         borderDashOffset: 0.0,
@@ -82,29 +73,28 @@ const LineChartComp = React.forwardRef((props, ref) => {
         type: 'linear',
         position: 'bottom',
         ticks: {
-          color: 'white', // Schriftfarbe der X-Achse auf weiß setzen
+          color: 'white',
         },
         grid: {
-          color: 'white', // Gitterlinienfarbe auf weiß setzen
+          color: 'white',
         },
         title: {
           display: true,
           text: 'Time in Seconds',
-          color: 'white', // Achsentitel-Farbe auf weiß setzen
+          color: 'white',
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'white', // Schriftfarbe der Y-Achse auf weiß setzen
+          color: 'white',
         },
         grid: {
-          color: 'white', // Gitterlinienfarbe auf weiß setzen
-        },
-        title: {
+          color: 'white'},
+          title: {
           display: true,
           text: 'Temperature in °C',
-          color: 'white', // Achsentitel-Farbe auf weiß setzen
+          color: 'white'
         },
       },
     },
@@ -115,12 +105,12 @@ const LineChartComp = React.forwardRef((props, ref) => {
           mode: 'horizontal',
           scaleID: 'y',
           value: Math.max(...data.map((dataPoint) => dataPoint.motor)),
-          borderColor: 'red',
+          borderColor: 'black',
           borderWidth: 2,
           label: {
             content: 'Max Wert',
             enabled: true,
-            fontColor: 'white', // Schriftfarbe der Annotation auf weiß setzen
+            fontColor: 'white'
           },
         },
       ],
@@ -130,13 +120,13 @@ const LineChartComp = React.forwardRef((props, ref) => {
         display: true,
         position: 'top',
         labels: {
-          color: 'white', // Schriftfarbe der Legende auf weiß setzen
+          color: 'white'
         },
       }
     },
     elements: {
       line: {
-        tension: 0.4, // Ändern der Linientension
+        tension: 0.4
       },
     },
     responsive: true,
@@ -151,73 +141,16 @@ const LineChartComp = React.forwardRef((props, ref) => {
     }
   };
 
-  const test = () => {
-    console.log("test");
-    console.log(ref);
-    const blackLegend =  {
-      display: true,
-      position: 'top',
-      labels: {
-        color: 'black', // Schriftfarbe der Legende auf weiß setzen
-      },
-    }
-    const blackScales = {
-      x: {
-        type: 'linear',
-        position: 'bottom',
-        ticks: {
-          color: 'red', // Schriftfarbe der X-Achse auf weiß setzen
-        },
-        grid: {
-          color: 'red', // Gitterlinienfarbe auf weiß setzen
-        },
-        title: {
-          display: true,
-          text: 'Time in Seconds',
-          color: 'red', // Achsentitel-Farbe auf weiß setzen
-        },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          color: 'black', // Schriftfarbe der Y-Achse auf weiß setzen
-        },
-        grid: {
-          color: 'black', // Gitterlinienfarbe auf weiß setzen
-        },
-        title: {
-          display: true,
-          text: 'Temperature in °C',
-          color: 'black', // Achsentitel-Farbe auf weiß setzen
-        },
-      }
-    };
-  
-    ref.current.options.scales = blackScales;
-    ref.current.options.plugins.legend = blackLegend;
-    ref.current.update();
-  
-  }
-
-
-
-
   return (
-    <div>
-      <button onClick={test}>test todo del</button>
-      <Line
-        style={{
-          maxWidth: '500px',
-          maxHeight: '500px',
-          background: 'linear-gradient(to bottom, #333, #000)',
-        }}
-        ref={ref}
-        data={chartData}
-        options={options}
-        // plugins={[gradientBackgroundPlugin]}  // plugins als Array übergeben
-      />
-    </div>
-
+    <Line
+      style={{
+        maxWidth: '500px',
+        maxHeight: '500px',
+        background: 'linear-gradient(to bottom, #333, #000)',
+      }}
+      ref={ref}
+      data={chartData}
+      options={options}/>
   );
 });
 
@@ -225,43 +158,3 @@ export default LineChartComp;
 
 
 
-// // LineChart.js
-// import { Line } from 'react-chartjs-2';
-// import React, { useRef, useEffect } from 'react';
-// import Chart from 'chart.js/auto';
-// import { CategoryScale } from 'chart.js';
-
-// const LineChartComp = React.forwardRef((props, ref) => {
-
-  
-//   const setFontColorToWhite = () => {
-//     // Beispiel: Setze alle Schriftfarben auf Weiß
-//     // Hier kannst du deine spezifische Logik für die Änderung der Schriftfarben implementieren
-//     const chartInstance = ref.current.chartInstance;
-//     chartInstance.options.scales.x.ticks.color = 'white';
-//     chartInstance.options.scales.y.ticks.color = 'white';
-//     chartInstance.options.scales.x.grid.color = 'white';
-//     chartInstance.options.scales.y.grid.color = 'white';
-//     chartInstance.options.scales.x.title.color = 'white';
-//     chartInstance.options.scales.y.title.color = 'white';
-//     chartInstance.options.plugins.legend.labels.color = 'white';
-//     chartInstance.options.annotation.annotations[0].label.fontColor = 'white';
-//   };
-
-//   useEffect(() => {
-//     setFontColorToWhite();
-//   }, []);
-
-//   return (
-//     <Line
-//       style={{
-//         maxWidth: '500px',
-//         maxHeight: '500px',
-//         background: 'linear-gradient(to bottom, #333, #000)',
-//       }}
-//       ref={ref} data={chartData} options={options}
-//     />
-//   );
-// });
-
-// export default LineChartComp;
