@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { blackScales, blackLegend, whiteScales, whiteLegend } from './LineChartStyles';
 
-const DownloaderComp = ({ chartRef, onImageDownload }) => {
+const DiagnosisStopperComp = ({ chartRef, onImageDownload }) => {
 
   console.log()
   const downloadImage = useCallback(async () => {
@@ -32,7 +32,7 @@ const DownloaderComp = ({ chartRef, onImageDownload }) => {
   };
 
   return (
-    <button type="button" onClick={downloadImage}>
+    <button type="button" className="styledButton" onClick={downloadImage}>
       Stop Diagnosis
     </button>
   );
@@ -40,4 +40,4 @@ const DownloaderComp = ({ chartRef, onImageDownload }) => {
 
 
 
-export default DownloaderComp;
+export default DiagnosisStopperComp;

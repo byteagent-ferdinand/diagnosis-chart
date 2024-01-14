@@ -1,4 +1,4 @@
-// LineChart.js
+
 import { Line } from 'react-chartjs-2';
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
@@ -146,6 +146,8 @@ const LineChartComp = React.forwardRef((props, ref) => {
       style={{
         maxWidth: '500px',
         maxHeight: '500px',
+        marginTop: '20px',
+        marginBottom: '20px',
         background: 'linear-gradient(to bottom, #333, #000)',
       }}
       ref={ref}
