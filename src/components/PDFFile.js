@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Text, Image, Document, StyleSheet } from '@react-pdf/renderer';
-import chartImage from '../test-chart.png';
+import chartImage from '../chart.png';
 
 const styles = StyleSheet.create({
     body: {

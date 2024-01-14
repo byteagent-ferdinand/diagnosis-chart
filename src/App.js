@@ -8,11 +8,12 @@ import UploaderComp from "./components/Uploader";
 import ImageRendererComp from "./components/ImageRenderer"; 
 import PDFFile from "./components/PDFFile";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import PdfDownloadButton from "./components/PdfDownloadButton";
 
 function App() {
   const chartRef = useRef(null);
   const [imageBase64, setImageBase64] = useState(null);
-  const [imageUrls, setImageUrls] = useState([]);
+  // const [imageUrls, setImageUrls] = useState([]);
   
   const handleImageDownload = (base64) => {
     setImageBase64(base64);
@@ -20,37 +21,17 @@ function App() {
 
   return (
     <div className="App">
-
-      <PDFDownloadLink 
-        document={<PDFFile/>}
-        fileName="FORM">
-        {({loading}) => (loading ? <button>Loading Document...</button> : <button>Download</button>)}
-
-      </PDFDownloadLink>
-      
-      <PDFFile></PDFFile>
-
-
-      <UploaderComp
+      {/* <UploaderComp
         chartRef={chartRef}
         setImageUrls={setImageUrls}
-        imageBase64={imageBase64}/>
+        imageBase64={imageBase64}/> */}
 
       <LineChartComp ref={chartRef} />
 
-      {imageUrls.map((url) => (
-        <div key={url} className="image-wrapper" style={{ width: "500px", height: "auto" }}>
-          <img
-            id="savedChart"
-            src={url}
-            alt="uploaded"
-            style={{ width: "500px", height: "auto" }}
-          />
-        </div>
-      ))}
+      {!imageBase64 && <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />}
+      {imageBase64 && <PdfDownloadButton imageBase64={imageBase64} />}
 
-      {/* <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
-      <ImageRendererComp imageBase64={imageBase64} /> */}
+      {/* <ImageRendererComp imageBase64={imageBase64} /> */}
 
     </div>
   );

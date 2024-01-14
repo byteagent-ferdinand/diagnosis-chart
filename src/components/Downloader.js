@@ -33,7 +33,7 @@ const DownloaderComp = ({ chartRef, onImageDownload }) => {
 
   return (
     <button type="button" onClick={downloadImage}>
-      Download
+      Stop Diagnosis
     </button>
   );
 };
