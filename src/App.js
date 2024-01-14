@@ -6,6 +6,8 @@ import LineChartComp from "./components/LineChart";
 import DownloaderComp from "./components/Downloader";
 import UploaderComp from "./components/Uploader"; 
 import ImageRendererComp from "./components/ImageRenderer"; 
+import PDFFile from "./components/PDFFile";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function App() {
   const chartRef = useRef(null);
@@ -18,6 +20,17 @@ function App() {
 
   return (
     <div className="App">
+
+      <PDFDownloadLink 
+        document={<PDFFile/>}
+        fileName="FORM">
+        {({loading}) => (loading ? <button>Loading Document...</button> : <button>Download</button>)}
+
+      </PDFDownloadLink>
+      
+      <PDFFile></PDFFile>
+
+
       <UploaderComp
         chartRef={chartRef}
         setImageUrls={setImageUrls}
@@ -28,6 +41,7 @@ function App() {
       {imageUrls.map((url) => (
         <div key={url} className="image-wrapper" style={{ width: "500px", height: "auto" }}>
           <img
+            id="savedChart"
             src={url}
             alt="uploaded"
             style={{ width: "500px", height: "auto" }}
@@ -35,8 +49,8 @@ function App() {
         </div>
       ))}
 
-      <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
-      <ImageRendererComp imageBase64={imageBase64} />
+      {/* <DownloaderComp chartRef={chartRef} onImageDownload={handleImageDownload} />
+      <ImageRendererComp imageBase64={imageBase64} /> */}
 
     </div>
   );
