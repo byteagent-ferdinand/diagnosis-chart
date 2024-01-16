@@ -3,42 +3,73 @@ import { Line } from 'react-chartjs-2';
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import { CategoryScale } from 'chart.js';
+import { useDiagnose } from '../DiagnoseContext'
+import { calculateTempStats } from '../calculateStats';
+
 
 const initialData = [
-  { sec: 0, motor: 90, gearbox: 70, exhaust: 80 },
+  { sec: 0, temp: 90},
 ];
 
 Chart.register(CategoryScale);
 
 const LineChartComp = React.forwardRef((props, ref) => {
+
+  const { diagnosisData, updateDiagnosisData } = useDiagnose();
+
   const [data, setData] = useState(initialData);
   const [isGeneratingData, setIsGeneratingData] = useState(true);
 
   const updateData = () => {
-    if (isGeneratingData) {
-      const newData = [...data];
-      newData.push({
-        sec: newData[newData.length - 1].sec + 1,
-        motor: Math.floor(190 - Math.random() * 70),
-      });
-      setData(newData.slice(-50));
-    }
+
+    const newData = [...data];
+    newData.push({
+      sec: newData[newData.length - 1].sec + 1,
+      temp: Math.floor(190 - Math.random() * 70),
+    });
+    setData(newData.slice(-50));
+  
+
+
+    const tempData = calculateTempStats(data)
+    console.log(tempData)
+
+
+
+
+    const exportData = {
+      
+      diagnosticResult: {
+        label: 'Diagnostic result:',
+        text: `After a thorough vehicle diagnosis, the results are as follows: The engine runs smoothly without abnormal noises, and all electronic systems are in proper working order. Brakes exhibit no signs of wear, and tire pressure is within recommended limits. The cooling system components maintain proper function with no signs of overheating. Regularly check and top up the coolant for optimal temperatures. In summary, the vehicle is technically sound, but routine maintenance, especially for the cooling system, is advised for optimal performance and safety.`,
+        ...tempData
+      }
+
+    };
+
+    updateDiagnosisData(exportData);
+
+
   };
   
   useEffect(() => {
-    if (ref && ref.current) {
-      ref.current.stopDataGeneration =  async () => {
+    let intervalId;
+
+    if (ref && ref.current && isGeneratingData) {
+      ref.current.stopDataGeneration = async () => {
         setIsGeneratingData(false);
         await new Promise(resolve => setTimeout(resolve, 20));
       };
+
+      intervalId = setInterval(() => {
+        updateData();
+      }, 1000);
     }
 
-    const intervalId = setInterval(() => {
-      updateData();
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [data, isGeneratingData]);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [data, isGeneratingData, ref]); 
 
   const chartData = {
     labels: data.map((dataPoint) => dataPoint.sec),
@@ -62,7 +93,7 @@ const LineChartComp = React.forwardRef((props, ref) => {
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
-        data: data.map((dataPoint) => dataPoint.motor),
+        data: data.map((dataPoint) => dataPoint.temp),
       },
     ],
   };
@@ -104,7 +135,7 @@ const LineChartComp = React.forwardRef((props, ref) => {
           type: 'line',
           mode: 'horizontal',
           scaleID: 'y',
-          value: Math.max(...data.map((dataPoint) => dataPoint.motor)),
+          value: Math.max(...data.map((dataPoint) => dataPoint.temp)),
           borderColor: 'black',
           borderWidth: 2,
           label: {
